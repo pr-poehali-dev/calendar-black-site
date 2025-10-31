@@ -13,7 +13,7 @@ export default function Index() {
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentDate(new Date());
-    }, 60000);
+    }, 1000);
     return () => clearInterval(timer);
   }, []);
 
@@ -52,30 +52,30 @@ export default function Index() {
     const currentYear = currentDate.getFullYear();
 
     return (
-      <div className="flex flex-col space-y-3">
-        <h2 className="text-2xl font-bold text-white capitalize tracking-wide text-center">
+      <div className="flex flex-col space-y-6">
+        <h2 className="text-5xl font-bold text-white capitalize tracking-wide text-center mb-4">
           {monthName} {year}
         </h2>
-        <div className="flex flex-col gap-2">
-          <div className="grid grid-cols-7 gap-2">
+        <div className="flex flex-col gap-4">
+          <div className="grid grid-cols-7 gap-4">
             {weekDays.map((day) => (
               <div
                 key={day}
-                className="text-center text-sm font-medium text-white/70"
+                className="text-center text-xl font-medium text-white/70"
               >
                 {day}
               </div>
             ))}
           </div>
           {weeks.map((week, idx) => (
-            <div key={idx} className="grid grid-cols-7 gap-2">
+            <div key={idx} className="grid grid-cols-7 gap-4">
               {week.map((day, dayIdx) => {
                 const isToday = day === today && month === currentMonth && year === currentYear;
                 
                 return (
                   <div
                     key={dayIdx}
-                    className={`aspect-square flex items-center justify-center text-lg font-medium transition-all duration-200 ${
+                    className={`aspect-square flex items-center justify-center text-3xl font-medium transition-all duration-200 ${
                       day === null
                         ? ''
                         : isToday
@@ -94,28 +94,55 @@ export default function Index() {
     );
   };
 
-  const getThreeMonths = () => {
-    const months = [];
-    const now = new Date();
-    
-    for (let i = -1; i <= 1; i++) {
-      const date = new Date(now.getFullYear(), now.getMonth() + i, 1);
-      months.push(getMonthData(date.getFullYear(), date.getMonth()));
-    }
-    
-    return months;
+  const getCurrentMonth = () => {
+    return getMonthData(currentDate.getFullYear(), currentDate.getMonth());
   };
 
-  const threeMonths = getThreeMonths();
+  const formatTime = (date: Date) => {
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${hours}:${minutes}`;
+  };
+
+  const formatDate = (date: Date) => {
+    const weekDays = ['воскресенье', 'понедельник', 'вторник', 'среда', 'четверг', 'пятница', 'суббота'];
+    const months = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+    
+    const weekDay = weekDays[date.getDay()];
+    const day = date.getDate();
+    const month = months[date.getMonth()];
+    
+    return `${weekDay}, ${day} ${month}`;
+  };
+
+  const currentMonth = getCurrentMonth();
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center p-8">
-      <div className="w-full max-w-7xl grid grid-cols-1 md:grid-cols-3 gap-12">
-        {threeMonths.map((monthData, index) => (
-          <div key={index}>
-            {renderMonth(monthData)}
+    <div className="h-screen bg-black flex overflow-hidden">
+      <div className="w-1/3 relative flex flex-col items-center justify-center p-12">
+        <div 
+          className="absolute inset-0 bg-cover bg-center"
+          style={{
+            backgroundImage: 'url(https://cdn.poehali.dev/files/4c7c81d5-55c2-4fbb-85b3-902e3e3656f8.jpg)'
+          }}
+        >
+          <div className="absolute inset-0 bg-black/40" />
+        </div>
+        
+        <div className="relative z-10 flex flex-col items-center space-y-6">
+          <div className="text-9xl font-bold text-white tracking-wider">
+            {formatTime(currentDate)}
           </div>
-        ))}
+          <div className="text-2xl text-white/90 font-medium">
+            {formatDate(currentDate)}
+          </div>
+        </div>
+      </div>
+
+      <div className="w-2/3 flex items-center justify-center p-12">
+        <div className="w-full max-w-4xl">
+          {renderMonth(currentMonth)}
+        </div>
       </div>
     </div>
   );
