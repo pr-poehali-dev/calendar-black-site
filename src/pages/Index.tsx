@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function Index() {
   const [currentDate] = useState(new Date());
@@ -98,14 +98,37 @@ export default function Index() {
 
   const nextMonths = getNextMonths();
 
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://yastatic.net/s3/home/services/block/2.6/block.js';
+    script.async = true;
+    document.body.appendChild(script);
+
+    return () => {
+      if (script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
+    };
+  }, []);
+
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center p-8">
+    <div className="min-h-screen bg-black flex flex-col items-center justify-center p-8 gap-8">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 max-w-7xl w-full">
         {nextMonths.map((monthData, idx) => (
           <div key={idx}>
             {renderMonth(monthData)}
           </div>
         ))}
+      </div>
+      
+      <div className="mt-8">
+        <div 
+          className="pogoda-informer-2-6" 
+          data-stick="false" 
+          data-city="27612" 
+          data-width="350" 
+          data-height="150"
+        />
       </div>
     </div>
   );
