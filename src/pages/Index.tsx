@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 export default function Index() {
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const [currentDate] = useState(new Date());
 
   const monthNames = [
     'январь', 'февраль', 'март', 'апрель', 'май', 'июнь',
@@ -9,13 +9,6 @@ export default function Index() {
   ];
 
   const weekDays = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentDate(new Date());
-    }, 1000);
-    return () => clearInterval(timer);
-  }, []);
 
   const getMonthData = (year: number, month: number) => {
     const firstDay = new Date(year, month, 1);
@@ -52,30 +45,30 @@ export default function Index() {
     const currentYear = currentDate.getFullYear();
 
     return (
-      <div className="flex flex-col space-y-6">
-        <h2 className="text-5xl font-bold text-white capitalize tracking-wide text-center mb-4">
+      <div className="flex flex-col space-y-4">
+        <h2 className="text-3xl font-bold text-white capitalize tracking-wide text-center mb-2">
           {monthName} {year}
         </h2>
-        <div className="flex flex-col gap-4">
-          <div className="grid grid-cols-7 gap-4">
+        <div className="flex flex-col gap-3">
+          <div className="grid grid-cols-7 gap-3">
             {weekDays.map((day) => (
               <div
                 key={day}
-                className="text-center text-xl font-medium text-white/70"
+                className="text-center text-lg font-medium text-white/70"
               >
                 {day}
               </div>
             ))}
           </div>
           {weeks.map((week, idx) => (
-            <div key={idx} className="grid grid-cols-7 gap-4">
+            <div key={idx} className="grid grid-cols-7 gap-3">
               {week.map((day, dayIdx) => {
                 const isToday = day === today && month === currentMonth && year === currentYear;
                 
                 return (
                   <div
                     key={dayIdx}
-                    className={`aspect-square flex items-center justify-center text-3xl font-medium transition-all duration-200 ${
+                    className={`aspect-square flex items-center justify-center text-2xl font-medium transition-all duration-200 ${
                       day === null
                         ? ''
                         : isToday
@@ -94,55 +87,25 @@ export default function Index() {
     );
   };
 
-  const getCurrentMonth = () => {
-    return getMonthData(currentDate.getFullYear(), currentDate.getMonth());
+  const getNextMonths = () => {
+    const months = [];
+    for (let i = 0; i < 3; i++) {
+      const date = new Date(currentDate.getFullYear(), currentDate.getMonth() + i, 1);
+      months.push(getMonthData(date.getFullYear(), date.getMonth()));
+    }
+    return months;
   };
 
-  const formatTime = (date: Date) => {
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    return `${hours}:${minutes}`;
-  };
-
-  const formatDate = (date: Date) => {
-    const weekDays = ['воскресенье', 'понедельник', 'вторник', 'среда', 'четверг', 'пятница', 'суббота'];
-    const months = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
-    
-    const weekDay = weekDays[date.getDay()];
-    const day = date.getDate();
-    const month = months[date.getMonth()];
-    
-    return `${weekDay}, ${day} ${month}`;
-  };
-
-  const currentMonth = getCurrentMonth();
+  const nextMonths = getNextMonths();
 
   return (
-    <div className="h-screen bg-black flex overflow-hidden">
-      <div className="w-1/3 relative flex flex-col items-center justify-start p-12 pt-24">
-        <div 
-          className="absolute inset-0 bg-cover bg-center"
-          style={{
-            backgroundImage: 'url(https://cdn.poehali.dev/files/9d7c6d6f-3af7-4586-bdb1-281422a811b7.jpg)'
-          }}
-        >
-          <div className="absolute inset-0 bg-black/40" />
-        </div>
-        
-        <div className="relative z-10 flex flex-col items-center space-y-6">
-          <div className="text-9xl font-bold text-white tracking-wider">
-            {formatTime(currentDate)}
+    <div className="min-h-screen bg-black flex items-center justify-center p-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 max-w-7xl w-full">
+        {nextMonths.map((monthData, idx) => (
+          <div key={idx}>
+            {renderMonth(monthData)}
           </div>
-          <div className="text-2xl text-white/90 font-medium">
-            {formatDate(currentDate)}
-          </div>
-        </div>
-      </div>
-
-      <div className="w-2/3 flex items-center justify-center p-12">
-        <div className="w-full max-w-4xl">
-          {renderMonth(currentMonth)}
-        </div>
+        ))}
       </div>
     </div>
   );
