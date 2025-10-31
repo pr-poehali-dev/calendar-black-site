@@ -88,9 +88,9 @@ const Index = () => {
       currentWeekDays.push(
         <div
           key={day}
-          className={`aspect-square flex items-center justify-center text-sm font-light transition-all duration-200 hover:scale-110 ${
+          className={`aspect-square flex items-center justify-center text-4xl font-bold transition-all duration-200 hover:scale-110 ${
             isCurrentDay
-              ? 'bg-[#EF4444] rounded-full text-white font-medium'
+              ? 'bg-[#EF4444] rounded-full text-white'
               : 'text-white/90'
           }`}
         >
@@ -112,29 +112,29 @@ const Index = () => {
 
     return (
       <div 
-        className={`flex flex-col space-y-2 transition-opacity duration-300 ${
+        className={`flex flex-col space-y-4 transition-opacity duration-300 ${
           isActive ? 'opacity-100' : 'opacity-50'
         }`}
         data-month={month}
       >
-        <h2 className="text-lg font-medium text-white/90 capitalize tracking-wide text-center mb-1">
+        <h2 className="text-4xl font-bold text-white/90 capitalize tracking-wide text-center mb-2">
           {monthName}
         </h2>
-        <div className="flex flex-col gap-1.5">
-          <div className="grid grid-cols-[auto_repeat(7,1fr)] gap-1.5 items-center">
-            <div className="text-xs text-gray-500"></div>
+        <div className="flex flex-col gap-3">
+          <div className="grid grid-cols-[auto_repeat(7,1fr)] gap-3 items-center">
+            <div className="text-xl text-gray-500 w-8"></div>
             {weekDays.map((day) => (
               <div
                 key={day}
-                className="text-center text-[10px] font-normal text-white/50"
+                className="text-center text-xl font-bold text-white/50"
               >
                 {day}
               </div>
             ))}
           </div>
           {weeks.map((week, idx) => (
-            <div key={idx} className="grid grid-cols-[auto_repeat(7,1fr)] gap-1.5 items-center">
-              <div className="text-[10px] text-gray-500 font-light text-right pr-1 w-5">
+            <div key={idx} className="grid grid-cols-[auto_repeat(7,1fr)] gap-3 items-center">
+              <div className="text-xl text-gray-500 font-bold text-right pr-2 w-8">
                 {week.weekNumber}
               </div>
               {week.days}
@@ -196,7 +196,7 @@ const Index = () => {
           {months.map((monthData, index) => (
             <div 
               key={index} 
-              className="w-full max-w-sm h-[calc(100vh/3)] flex items-center justify-center snap-start shrink-0"
+              className="w-full max-w-4xl h-[60vh] flex items-center justify-center snap-center shrink-0"
             >
               <div className="w-full">
                 {renderMonth(monthData, index === selectedMonth)}
