@@ -192,11 +192,11 @@ const Index = () => {
         className="flex-1 overflow-y-auto snap-y snap-mandatory scrollbar-hide"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
-        <div className="h-full flex flex-col justify-center items-center px-4">
+        <div className="flex flex-col items-center px-4 py-[40vh]">
           {months.map((monthData, index) => (
             <div 
               key={index} 
-              className="w-full max-w-4xl h-[60vh] flex items-center justify-center snap-center shrink-0"
+              className="w-full max-w-4xl h-[20vh] flex items-center justify-center snap-center shrink-0"
             >
               <div className="w-full">
                 {renderMonth(monthData, index === selectedMonth)}
