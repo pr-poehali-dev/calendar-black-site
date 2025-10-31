@@ -54,17 +54,16 @@ const Index = () => {
   const weekDays = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
 
   const renderMonth = (monthData: ReturnType<typeof getMonthData>) => {
-    const days = [];
-    const weekNumbers = [];
     const { year, month, daysInMonth, startDayOfWeek, monthName } = monthData;
     
     const adjustedStartDay = startDayOfWeek === 0 ? 6 : startDayOfWeek - 1;
     
+    const weeks: Array<{ weekNumber: number; days: JSX.Element[] }> = [];
+    let currentWeekDays: JSX.Element[] = [];
     let currentWeek = getWeekNumber(new Date(year, month, 1));
-    let weekRowCount = 0;
     
     for (let i = 0; i < adjustedStartDay; i++) {
-      days.push(<div key={`empty-${i}`} className="aspect-square" />);
+      currentWeekDays.push(<div key={`empty-${i}`} className="aspect-square" />);
     }
     
     for (let day = 1; day <= daysInMonth; day++) {
@@ -72,20 +71,7 @@ const Index = () => {
       const dayOfWeek = new Date(year, month, day).getDay();
       const adjustedDay = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
       
-      if (adjustedDay === 0 && day > 1) {
-        currentWeek = getWeekNumber(new Date(year, month, day));
-        weekRowCount++;
-      }
-      
-      if (adjustedDay === 0) {
-        weekNumbers.push(
-          <div key={`week-${weekRowCount}`} className="flex items-center justify-center text-xs text-white/40 font-light">
-            {currentWeek}
-          </div>
-        );
-      }
-      
-      days.push(
+      currentWeekDays.push(
         <div
           key={day}
           className={`aspect-square flex items-center justify-center text-base font-light transition-all duration-200 hover:scale-110 ${
@@ -97,14 +83,17 @@ const Index = () => {
           {day}
         </div>
       );
-    }
-
-    if (weekNumbers.length === 0) {
-      weekNumbers.push(
-        <div key="week-0" className="flex items-center justify-center text-xs text-white/40 font-light">
-          {currentWeek}
-        </div>
-      );
+      
+      if (adjustedDay === 6 || day === daysInMonth) {
+        while (currentWeekDays.length < 7) {
+          currentWeekDays.push(<div key={`empty-end-${currentWeekDays.length}`} className="aspect-square" />);
+        }
+        weeks.push({ weekNumber: currentWeek, days: currentWeekDays });
+        currentWeekDays = [];
+        if (day < daysInMonth) {
+          currentWeek = getWeekNumber(new Date(year, month, day + 1));
+        }
+      }
     }
 
     return (
@@ -112,21 +101,26 @@ const Index = () => {
         <h2 className="text-xl font-medium text-white/90 capitalize tracking-wide">
           {monthName}
         </h2>
-        <div className="grid grid-cols-[auto_1fr] gap-2">
-          <div className="flex flex-col gap-2 pt-8">
-            {weekNumbers}
-          </div>
-          <div className="grid grid-cols-7 gap-2">
+        <div className="flex flex-col gap-2">
+          <div className="grid grid-cols-[auto_repeat(7,1fr)] gap-2 items-center">
+            <div className="text-xs text-gray-500"></div>
             {weekDays.map((day) => (
               <div
                 key={day}
-                className="text-center text-xs font-normal text-white/50 pb-1"
+                className="text-center text-xs font-normal text-white/50"
               >
                 {day}
               </div>
             ))}
-            {days}
           </div>
+          {weeks.map((week, idx) => (
+            <div key={idx} className="grid grid-cols-[auto_repeat(7,1fr)] gap-2 items-center">
+              <div className="text-xs text-gray-500 font-light text-right pr-1 w-6">
+                {week.weekNumber}
+              </div>
+              {week.days}
+            </div>
+          ))}
         </div>
       </div>
     );
