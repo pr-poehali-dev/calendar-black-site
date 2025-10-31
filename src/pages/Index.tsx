@@ -105,7 +105,7 @@ export default function Index() {
                 return (
                   <div
                     key={dayIdx}
-                    className={`aspect-square flex items-center justify-center text-3xl font-medium transition-all duration-200 ${
+                    className={`aspect-square flex items-center justify-center text-9xl font-medium transition-all duration-200 ${
                       day === null
                         ? ''
                         : isToday
