@@ -152,16 +152,16 @@ export default function Index() {
     return (
       <div className="flex flex-col gap-1 mb-4">
         <h3 className="text-xs font-bold text-white/80 capitalize text-center mb-1">
-          {monthName}
+          {monthName} {year}
         </h3>
         <div className="flex gap-1">
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-1 pt-5">
             {weeks.map((week, idx) => {
               const firstDayOfWeek = week.find(d => d !== null);
               if (!firstDayOfWeek) return <div key={idx} className="h-4" />;
               const weekNum = getWeekNumber(new Date(year, month, firstDayOfWeek));
               return (
-                <div key={idx} className="text-[10px] text-white/50 w-5 h-4 flex items-center justify-center">
+                <div key={idx} className="text-[10px] text-white/50 w-6 h-4 flex items-center justify-center">
                   {weekNum}
                 </div>
               );
@@ -203,10 +203,21 @@ export default function Index() {
   };
 
   const currentMonth = getMonthData(currentDate.getFullYear(), currentDate.getMonth());
-  const allMonths = Array.from({ length: 12 }, (_, i) => ({
-    year: currentDate.getFullYear(),
-    month: i
-  }));
+  
+  const allMonths = [];
+  const currentYear = currentDate.getFullYear();
+  const currentMonthIndex = currentDate.getMonth();
+  
+  for (let yearOffset = -2; yearOffset <= 2; yearOffset++) {
+    for (let month = 0; month < 12; month++) {
+      allMonths.push({
+        year: currentYear + yearOffset,
+        month: month
+      });
+    }
+  }
+  
+  const currentMonthPosition = (2 * 12) + currentMonthIndex;
 
   return (
     <div className="h-screen bg-black flex overflow-hidden">
@@ -246,10 +257,19 @@ export default function Index() {
         </div>
       </div>
 
-      <div className="w-1/6 bg-black/50 p-4 overflow-y-auto">
+      <div className="w-1/6 bg-black/50 p-4 overflow-y-auto" ref={(el) => {
+        if (el) {
+          const targetElement = el.children[0]?.children[currentMonthPosition] as HTMLElement;
+          if (targetElement) {
+            setTimeout(() => {
+              targetElement.scrollIntoView({ block: 'center', behavior: 'auto' });
+            }, 100);
+          }
+        }
+      }}>
         <div className="space-y-2">
-          {allMonths.map(({ year, month }) => (
-            <div key={month}>
+          {allMonths.map(({ year, month }, idx) => (
+            <div key={`${year}-${month}`}>
               {renderMiniMonth(year, month)}
             </div>
           ))}
