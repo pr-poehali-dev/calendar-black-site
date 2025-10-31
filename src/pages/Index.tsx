@@ -124,7 +124,89 @@ export default function Index() {
     );
   };
 
+  const getWeekNumber = (date: Date) => {
+    const target = new Date(date.valueOf());
+    const dayNr = (date.getDay() + 6) % 7;
+    target.setDate(target.getDate() - dayNr + 3);
+    const firstThursday = target.valueOf();
+    target.setMonth(0, 1);
+    if (target.getDay() !== 4) {
+      target.setMonth(0, 1 + ((4 - target.getDay()) + 7) % 7);
+    }
+    return 1 + Math.ceil((firstThursday - target.valueOf()) / 604800000);
+  };
+
+  const renderMiniMonth = (year: number, month: number) => {
+    const monthData = getMonthData(year, month);
+    const monthName = monthNames[month];
+    const weeks = [];
+    
+    for (let i = 0; i < monthData.days.length; i += 7) {
+      weeks.push(monthData.days.slice(i, i + 7));
+    }
+
+    const today = currentDate.getDate();
+    const currentMonth = currentDate.getMonth();
+    const currentYear = currentDate.getFullYear();
+
+    return (
+      <div className="flex flex-col gap-1 mb-4">
+        <h3 className="text-xs font-bold text-white/80 capitalize text-center mb-1">
+          {monthName}
+        </h3>
+        <div className="flex gap-1">
+          <div className="flex flex-col gap-1">
+            {weeks.map((week, idx) => {
+              const firstDayOfWeek = week.find(d => d !== null);
+              if (!firstDayOfWeek) return <div key={idx} className="h-4" />;
+              const weekNum = getWeekNumber(new Date(year, month, firstDayOfWeek));
+              return (
+                <div key={idx} className="text-[10px] text-white/50 w-5 h-4 flex items-center justify-center">
+                  {weekNum}
+                </div>
+              );
+            })}
+          </div>
+          <div className="flex-1">
+            <div className="grid grid-cols-7 gap-1 mb-1">
+              {['П', 'В', 'С', 'Ч', 'П', 'С', 'В'].map((day, i) => (
+                <div key={i} className="text-[8px] text-white/50 text-center">
+                  {day}
+                </div>
+              ))}
+            </div>
+            {weeks.map((week, idx) => (
+              <div key={idx} className="grid grid-cols-7 gap-1 mb-1">
+                {week.map((day, dayIdx) => {
+                  const isToday = day === today && month === currentMonth && year === currentYear;
+                  return (
+                    <div
+                      key={dayIdx}
+                      className={`text-[10px] flex items-center justify-center h-4 ${
+                        day === null
+                          ? ''
+                          : isToday
+                          ? 'bg-red-500 rounded-full text-white font-bold'
+                          : 'text-white/70'
+                      }`}
+                    >
+                      {day || ''}
+                    </div>
+                  );
+                })}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   const currentMonth = getMonthData(currentDate.getFullYear(), currentDate.getMonth());
+  const allMonths = Array.from({ length: 12 }, (_, i) => ({
+    year: currentDate.getFullYear(),
+    month: i
+  }));
 
   return (
     <div className="h-screen bg-black flex overflow-hidden">
@@ -158,9 +240,19 @@ export default function Index() {
         </div>
       </div>
 
-      <div className="w-2/3 flex items-center justify-center p-12">
-        <div className="w-full max-w-4xl">
+      <div className="w-1/2 flex items-center justify-center p-12">
+        <div className="w-full max-w-3xl">
           {renderMonth(currentMonth)}
+        </div>
+      </div>
+
+      <div className="w-1/6 bg-black/50 p-4 overflow-y-auto">
+        <div className="space-y-2">
+          {allMonths.map(({ year, month }) => (
+            <div key={month}>
+              {renderMiniMonth(year, month)}
+            </div>
+          ))}
         </div>
       </div>
     </div>
