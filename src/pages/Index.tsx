@@ -88,7 +88,7 @@ const Index = () => {
       currentWeekDays.push(
         <div
           key={day}
-          className={`aspect-square flex items-center justify-center text-base font-light transition-all duration-200 hover:scale-110 ${
+          className={`aspect-square flex items-center justify-center text-sm font-light transition-all duration-200 hover:scale-110 ${
             isCurrentDay
               ? 'bg-[#EF4444] rounded-full text-white font-medium'
               : 'text-white/90'
@@ -112,29 +112,29 @@ const Index = () => {
 
     return (
       <div 
-        className={`flex flex-col space-y-3 transition-opacity duration-300 ${
+        className={`flex flex-col space-y-2 transition-opacity duration-300 ${
           isActive ? 'opacity-100' : 'opacity-50'
         }`}
         data-month={month}
       >
-        <h2 className="text-2xl font-medium text-white/90 capitalize tracking-wide text-center">
+        <h2 className="text-lg font-medium text-white/90 capitalize tracking-wide text-center mb-1">
           {monthName}
         </h2>
-        <div className="flex flex-col gap-2">
-          <div className="grid grid-cols-[auto_repeat(7,1fr)] gap-2 items-center">
+        <div className="flex flex-col gap-1.5">
+          <div className="grid grid-cols-[auto_repeat(7,1fr)] gap-1.5 items-center">
             <div className="text-xs text-gray-500"></div>
             {weekDays.map((day) => (
               <div
                 key={day}
-                className="text-center text-xs font-normal text-white/50"
+                className="text-center text-[10px] font-normal text-white/50"
               >
                 {day}
               </div>
             ))}
           </div>
           {weeks.map((week, idx) => (
-            <div key={idx} className="grid grid-cols-[auto_repeat(7,1fr)] gap-2 items-center">
-              <div className="text-xs text-gray-500 font-light text-right pr-1 w-6">
+            <div key={idx} className="grid grid-cols-[auto_repeat(7,1fr)] gap-1.5 items-center">
+              <div className="text-[10px] text-gray-500 font-light text-right pr-1 w-5">
                 {week.weekNumber}
               </div>
               {week.days}
@@ -169,21 +169,21 @@ const Index = () => {
 
   return (
     <div className="h-screen bg-black flex flex-col overflow-hidden">
-      <div className="flex items-center justify-center gap-6 py-4 px-4 sticky top-0 z-10 bg-black/90 backdrop-blur-sm border-b border-white/10">
+      <div className="flex items-center justify-center gap-6 py-3 px-4 sticky top-0 z-10 bg-black/90 backdrop-blur-sm border-b border-white/10">
         <button
           onClick={handlePrevMonth}
           className="p-2 rounded-full hover:bg-white/10 transition-colors"
         >
-          <Icon name="ChevronUp" size={24} className="text-white" />
+          <Icon name="ChevronUp" size={20} className="text-white" />
         </button>
-        <h1 className="text-3xl font-bold text-white tracking-wider min-w-[120px] text-center">
+        <h1 className="text-2xl font-bold text-white tracking-wider min-w-[100px] text-center">
           {selectedYear}
         </h1>
         <button
           onClick={handleNextMonth}
           className="p-2 rounded-full hover:bg-white/10 transition-colors"
         >
-          <Icon name="ChevronDown" size={24} className="text-white" />
+          <Icon name="ChevronDown" size={20} className="text-white" />
         </button>
       </div>
       
@@ -192,13 +192,15 @@ const Index = () => {
         className="flex-1 overflow-y-auto snap-y snap-mandatory scrollbar-hide"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
-        <div className="flex flex-col items-center gap-16 py-8 px-4">
+        <div className="h-full flex flex-col justify-center items-center px-4">
           {months.map((monthData, index) => (
             <div 
               key={index} 
-              className="w-full max-w-md snap-center"
+              className="w-full max-w-sm h-[calc(100vh/3)] flex items-center justify-center snap-start shrink-0"
             >
-              {renderMonth(monthData, index === selectedMonth)}
+              <div className="w-full">
+                {renderMonth(monthData, index === selectedMonth)}
+              </div>
             </div>
           ))}
         </div>
