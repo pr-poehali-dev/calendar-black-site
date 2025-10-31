@@ -1,9 +1,11 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import Icon from '@/components/ui/icon';
 
 const Index = () => {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
   const currentDate = new Date();
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const getWeekNumber = (date: Date): number => {
     const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
@@ -19,19 +21,12 @@ const Index = () => {
     const daysInMonth = lastDay.getDate();
     const startDayOfWeek = firstDay.getDay();
     
-    const weeks: number[] = [];
-    for (let day = 1; day <= daysInMonth; day += 7) {
-      const date = new Date(year, month, day);
-      weeks.push(getWeekNumber(date));
-    }
-    
     return {
       year,
       month,
       daysInMonth,
       startDayOfWeek,
       monthName: firstDay.toLocaleDateString('ru-RU', { month: 'long' }),
-      weeks,
     };
   };
 
@@ -43,6 +38,25 @@ const Index = () => {
     return monthsData;
   }, [selectedYear]);
 
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+      const container = scrollContainerRef.current;
+      const monthElements = container.querySelectorAll('[data-month]');
+      if (monthElements[selectedMonth]) {
+        const element = monthElements[selectedMonth] as HTMLElement;
+        const containerHeight = container.clientHeight;
+        const elementTop = element.offsetTop;
+        const elementHeight = element.offsetHeight;
+        const scrollTo = elementTop - (containerHeight / 2) + (elementHeight / 2);
+        
+        container.scrollTo({
+          top: scrollTo,
+          behavior: 'smooth'
+        });
+      }
+    }
+  }, [selectedMonth, selectedYear]);
+
   const isToday = (year: number, month: number, day: number) => {
     return (
       currentDate.getFullYear() === year &&
@@ -53,7 +67,7 @@ const Index = () => {
 
   const weekDays = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
 
-  const renderMonth = (monthData: ReturnType<typeof getMonthData>) => {
+  const renderMonth = (monthData: ReturnType<typeof getMonthData>, isActive: boolean) => {
     const { year, month, daysInMonth, startDayOfWeek, monthName } = monthData;
     
     const adjustedStartDay = startDayOfWeek === 0 ? 6 : startDayOfWeek - 1;
@@ -97,8 +111,13 @@ const Index = () => {
     }
 
     return (
-      <div className="flex flex-col space-y-3">
-        <h2 className="text-xl font-medium text-white/90 capitalize tracking-wide">
+      <div 
+        className={`flex flex-col space-y-3 transition-opacity duration-300 ${
+          isActive ? 'opacity-100' : 'opacity-50'
+        }`}
+        data-month={month}
+      >
+        <h2 className="text-2xl font-medium text-white/90 capitalize tracking-wide text-center">
           {monthName}
         </h2>
         <div className="flex flex-col gap-2">
@@ -126,49 +145,70 @@ const Index = () => {
     );
   };
 
-  const handlePrevYear = () => {
-    if (selectedYear > currentDate.getFullYear() - 5) {
-      setSelectedYear(selectedYear - 1);
+  const handlePrevMonth = () => {
+    if (selectedMonth === 0) {
+      if (selectedYear > currentDate.getFullYear() - 5) {
+        setSelectedYear(selectedYear - 1);
+        setSelectedMonth(11);
+      }
+    } else {
+      setSelectedMonth(selectedMonth - 1);
     }
   };
 
-  const handleNextYear = () => {
-    if (selectedYear < currentDate.getFullYear() + 5) {
-      setSelectedYear(selectedYear + 1);
+  const handleNextMonth = () => {
+    if (selectedMonth === 11) {
+      if (selectedYear < currentDate.getFullYear() + 5) {
+        setSelectedYear(selectedYear + 1);
+        setSelectedMonth(0);
+      }
+    } else {
+      setSelectedMonth(selectedMonth + 1);
     }
   };
 
   return (
-    <div className="min-h-screen bg-black p-4 md:p-8">
-      <div className="max-w-[1600px] mx-auto">
-        <div className="flex items-center justify-center gap-6 mb-8 sticky top-4 z-10 bg-black/80 backdrop-blur-sm py-4 rounded-lg">
-          <button
-            onClick={handlePrevYear}
-            disabled={selectedYear <= currentDate.getFullYear() - 5}
-            className="p-2 rounded-full hover:bg-white/10 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-          >
-            <Icon name="ChevronLeft" size={28} className="text-white" />
-          </button>
-          <h1 className="text-4xl font-bold text-white tracking-wider">
-            {selectedYear}
-          </h1>
-          <button
-            onClick={handleNextYear}
-            disabled={selectedYear >= currentDate.getFullYear() + 5}
-            className="p-2 rounded-full hover:bg-white/10 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-          >
-            <Icon name="ChevronRight" size={28} className="text-white" />
-          </button>
-        </div>
-        
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 md:gap-10">
+    <div className="h-screen bg-black flex flex-col overflow-hidden">
+      <div className="flex items-center justify-center gap-6 py-4 px-4 sticky top-0 z-10 bg-black/90 backdrop-blur-sm border-b border-white/10">
+        <button
+          onClick={handlePrevMonth}
+          className="p-2 rounded-full hover:bg-white/10 transition-colors"
+        >
+          <Icon name="ChevronUp" size={24} className="text-white" />
+        </button>
+        <h1 className="text-3xl font-bold text-white tracking-wider min-w-[120px] text-center">
+          {selectedYear}
+        </h1>
+        <button
+          onClick={handleNextMonth}
+          className="p-2 rounded-full hover:bg-white/10 transition-colors"
+        >
+          <Icon name="ChevronDown" size={24} className="text-white" />
+        </button>
+      </div>
+      
+      <div 
+        ref={scrollContainerRef}
+        className="flex-1 overflow-y-auto snap-y snap-mandatory scrollbar-hide"
+        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+      >
+        <div className="flex flex-col items-center gap-16 py-8 px-4">
           {months.map((monthData, index) => (
-            <div key={index} className="w-full animate-fade-in">
-              {renderMonth(monthData)}
+            <div 
+              key={index} 
+              className="w-full max-w-md snap-center"
+            >
+              {renderMonth(monthData, index === selectedMonth)}
             </div>
           ))}
         </div>
       </div>
+
+      <style>{`
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+      `}</style>
     </div>
   );
 };
