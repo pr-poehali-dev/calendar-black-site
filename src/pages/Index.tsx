@@ -119,11 +119,11 @@ export default function Index() {
 
   return (
     <div className="h-screen bg-black flex overflow-hidden">
-      <div className="w-1/3 relative flex flex-col items-center justify-center p-12">
+      <div className="w-1/3 relative flex flex-col items-center justify-start p-12 pt-24">
         <div 
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            backgroundImage: 'url(https://cdn.poehali.dev/files/4c7c81d5-55c2-4fbb-85b3-902e3e3656f8.jpg)'
+            backgroundImage: 'url(https://cdn.poehali.dev/files/9d7c6d6f-3af7-4586-bdb1-281422a811b7.jpg)'
           }}
         >
           <div className="absolute inset-0 bg-black/40" />
