@@ -109,7 +109,7 @@ export default function Index() {
                       day === null
                         ? ''
                         : isToday
-                        ? 'border-[16px] border-red-500 text-white'
+                        ? 'border-[12px] border-red-500 text-white'
                         : 'text-white hover:bg-white/10'
                     }`}
                   >
