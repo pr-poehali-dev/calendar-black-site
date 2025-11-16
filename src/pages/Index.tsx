@@ -109,8 +109,8 @@ export default function Index() {
                       day === null
                         ? ''
                         : isToday
-                        ? 'bg-red-500 rounded-full text-white'
-                        : 'text-white hover:bg-white/10 rounded-full'
+                        ? 'border-8 border-red-500 text-white'
+                        : 'text-white hover:bg-white/10'
                     }`}
                   >
                     {day || ''}
